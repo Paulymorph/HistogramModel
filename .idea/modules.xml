@@ -2,7 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/Project/.idea/modules/3 курс-project.iml" filepath="$PROJECT_DIR$/Project/.idea/modules/3 курс-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/HistogramModel.iml" filepath="$PROJECT_DIR$/.idea/HistogramModel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Project/.idea/modules/Project-project-build.iml" filepath="$PROJECT_DIR$/Project/.idea/modules/Project-project-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Project/.idea/modules/project.iml" filepath="$PROJECT_DIR$/Project/.idea/modules/project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Project/.idea/modules/project-build.iml" filepath="$PROJECT_DIR$/Project/.idea/modules/project-build.iml" />
     </modules>
   </component>
 </project>
