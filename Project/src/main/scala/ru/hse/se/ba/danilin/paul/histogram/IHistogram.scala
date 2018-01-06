@@ -5,4 +5,5 @@ trait IHistogram[E] {
   def elementsUniverse: Set[E]
   def elementsPresent: Set[E]
   def subHistogram(elements: Set[E]): IHistogram[E]
+  def similarity(another: IHistogram[E]): Double
 }

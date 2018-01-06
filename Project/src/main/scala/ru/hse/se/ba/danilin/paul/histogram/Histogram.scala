@@ -15,6 +15,8 @@ case class Histogram[S, O](histogram: Map[O, Int])(implicit universe: IElementsU
     val filteredHistogram = histogram.filterKeys(element => elements.contains(element))
     Histogram(filteredHistogram)
   }
+
+  override def similarity(another: IHistogram[O]): Double = ???
 }
 
 object Histogram {
