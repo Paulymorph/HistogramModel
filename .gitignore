@@ -1,7 +1,6 @@
 /*
 !/.gitignore
 !/Documentation/
-!/Project/
-/Project/*
-!/Project/build.sbt
-!Project/src/
+!/build.sbt
+!/src/
+/src/Example/

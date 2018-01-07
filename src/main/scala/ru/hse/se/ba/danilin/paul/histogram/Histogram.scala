@@ -1,22 +1,20 @@
 package ru.hse.se.ba.danilin.paul.histogram
 
-import ru.hse.se.ba.danilin.paul.histogram.atomizers.{IAtomizer, IElementsUniverse}
+import ru.hse.se.ba.danilin.paul.histogram.atomizers.IAtomizer
 
-case class Histogram[S, O](histogram: Map[O, Int])(implicit universe: IElementsUniverse[O])
+case class Histogram[S, O](histogram: Map[O, Int])(implicit universe: ElementsUniverse[O])
   extends IHistogram[O] {
 
   override def apply(element: O): Int = histogram.getOrElse(element, 0)
 
-  override def elementsUniverse: Set[O] = universe.elementsUniverse
+  override def elementsUniverse: ElementsUniverse[O] = universe
 
   override def elementsPresent: Set[O] = histogram.keySet
 
-  override def subHistogram(elements: Set[O]): IHistogram[O] = {
-    val filteredHistogram = histogram.filterKeys(element => elements.contains(element))
-    Histogram(filteredHistogram)
+  override def subHistogram(newElementsUniverse: ElementsUniverse[O]): IHistogram[O] = {
+    val filteredHistogram = histogram.filterKeys(element => newElementsUniverse.isElementInUniverse(element))
+    Histogram(filteredHistogram)(newElementsUniverse)
   }
-
-  override def similarity(another: IHistogram[O]): Double = ???
 }
 
 object Histogram {
