@@ -1,6 +1,7 @@
 package ru.hse.se.ba.danilin.paul.histogram.operations
 
-import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, IHistogram}
+import ru.hse.se.ba.danilin.paul.histogram.Implicits.SetUniverse
+import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, Histogram, IHistogram}
 
 sealed trait Operation {
   def narity: Double
@@ -15,12 +16,31 @@ abstract class HistogramUnaryOperation extends HistogramOperation {
 }
 
 abstract class HistogramBinaryOperation extends HistogramOperation {
-  def apply[E](first: IHistogram[E], second: IHistogram[E]): IHistogram[E]
+  def apply[E](first: IHistogram[E], second: IHistogram[E]): IHistogram[E] = {
+    val allElements = first.elementsPresent ++ second.elementsPresent
+
+    val histPairs = for {
+      element <- allElements
+      leftCount = first(element)
+      rightCount = second(element)
+      mergeRes = merge(leftCount, rightCount) if mergeRes != 0
+    } yield element -> mergeRes
+
+    Histogram(histPairs.toMap)(new SetUniverse(allElements))
+  }
 
   def apply[E](histogram: IHistogram[E], properties: ElementsUniverse[E]): IHistogram[E] =
-    this (histogram, histogram.subHistogram(properties))
+    this.apply(histogram, histogram.subHistogram(properties))
 
   override val narity: Double = 2
+
+  /**
+    * Used to merge a histogram element of 2 histograms
+    * @param leftCount the count of an element from the left histogram
+    * @param rightCount the count of an element from the right histogram
+    * @return the result count of the element if the resulting histogram
+    */
+  protected def merge(leftCount: Int, rightCount: Int): Int
 }
 
 abstract class AggregateOperation extends Operation {

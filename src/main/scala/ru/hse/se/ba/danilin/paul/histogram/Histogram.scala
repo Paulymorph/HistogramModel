@@ -2,7 +2,7 @@ package ru.hse.se.ba.danilin.paul.histogram
 
 import ru.hse.se.ba.danilin.paul.histogram.atomizers.IAtomizer
 
-case class Histogram[S, O](histogram: Map[O, Int])(implicit universe: ElementsUniverse[O])
+case class Histogram[O](histogram: Map[O, Int])(implicit universe: ElementsUniverse[O])
   extends IHistogram[O] {
 
   override def apply(element: O): Int = histogram.getOrElse(element, 0)
@@ -18,7 +18,7 @@ case class Histogram[S, O](histogram: Map[O, Int])(implicit universe: ElementsUn
 }
 
 object Histogram {
-  def extract[S, O](source: S)(implicit atomizer: IAtomizer[S, O]) = {
+  def extract[S, O](source: S)(implicit atomizer: IAtomizer[S, O]): IHistogram[O] = {
     val atoms = atomizer atomize source
     val histMap = atoms.foldLeft(Map.empty[O, Int])({
       case (acc, i) =>
