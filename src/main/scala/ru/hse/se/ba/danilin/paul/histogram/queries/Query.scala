@@ -70,22 +70,18 @@ case class Query(actionsStack: Query.Stack[Input]) {
       case AggregateInput(number: Double) => Right(number)
     }
   }
-
-
-  val aliasesToInput = Stream(
-    "(" -> OpenBracketInput,
-    ")" -> ClosingBracketInput,
-    "+" -> OperatorInput(Unite),
-    "intersect" -> OperatorInput(Intersect),
-    "-" -> OperatorInput(Subtract),
-    "ab" -> HistogramInput("a b".toHistogram),
-    "abc" -> HistogramInput("a b c".toHistogram),
-    "abb" -> HistogramInput("a b b".toHistogram)
-  ).toMap
 }
 
 object Query {
   type Stack[E] = List[E]
+
+  val standardAliases = Stream(
+    "(" -> OpenBracketInput,
+    ")" -> ClosingBracketInput,
+    "+" -> OperatorInput(Unite),
+    "intersect" -> OperatorInput(Intersect),
+    "-" -> OperatorInput(Subtract)
+  ).toMap
 
   def fromString(query: String)(implicit aliasToInput: Map[String, Input]): Query =
     Query(Parser.parse(query)(aliasToInput).get)

@@ -1,6 +1,6 @@
 package ru.hse.se.ba.danilin.paul.histogram.operations
 
-object Unite extends HistogramBinaryOperation {
+object Unite extends HistogramBinaryMergeOperation {
   def max = (a: Int, b: Int) => if (a > b) a else b
 
   override protected def merge(leftCount: Int, rightCount: Int): Int =

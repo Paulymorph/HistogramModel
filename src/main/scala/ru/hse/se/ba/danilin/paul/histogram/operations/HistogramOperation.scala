@@ -16,7 +16,16 @@ abstract class HistogramUnaryOperation extends HistogramOperation {
 }
 
 abstract class HistogramBinaryOperation extends HistogramOperation {
-  def apply[E](first: IHistogram[E], second: IHistogram[E]): IHistogram[E] = {
+  def apply[E](first: IHistogram[E], second: IHistogram[E]): IHistogram[E]
+
+  def apply[E](histogram: IHistogram[E], properties: ElementsUniverse[E]): IHistogram[E] =
+    this.apply(histogram, histogram.subHistogram(properties))
+
+  override val narity: Double = 2
+}
+
+abstract class HistogramBinaryMergeOperation extends HistogramBinaryOperation {
+  override def apply[E](first: IHistogram[E], second: IHistogram[E]): IHistogram[E] = {
     val allElements = first.elementsPresent ++ second.elementsPresent
 
     val histPairs = for {
@@ -29,11 +38,6 @@ abstract class HistogramBinaryOperation extends HistogramOperation {
     Histogram(histPairs.toMap)(new SetUniverse(allElements))
   }
 
-  def apply[E](histogram: IHistogram[E], properties: ElementsUniverse[E]): IHistogram[E] =
-    this.apply(histogram, histogram.subHistogram(properties))
-
-  override val narity: Double = 2
-
   /**
     * Used to merge a histogram element of 2 histograms
     * @param leftCount the count of an element from the left histogram
@@ -42,6 +46,8 @@ abstract class HistogramBinaryOperation extends HistogramOperation {
     */
   protected def merge(leftCount: Int, rightCount: Int): Int
 }
+
+
 
 abstract class AggregateOperation extends Operation {
   def apply[E](histogram: IHistogram[E]): Double
