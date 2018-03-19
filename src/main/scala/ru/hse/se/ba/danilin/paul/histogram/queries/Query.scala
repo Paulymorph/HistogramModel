@@ -1,90 +1,111 @@
 package ru.hse.se.ba.danilin.paul.histogram.queries
 
-import ru.hse.se.ba.danilin.paul.histogram.IHistogram
+import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, IHistogram}
 import ru.hse.se.ba.danilin.paul.histogram.operations._
 
-sealed trait Input
-
-object Input {
-  def apply[T, E](t: T): Input =
-    t match {
-      case hist: IHistogram[E] => HistogramInput(hist)
-      case props: Set[E] => HistogramPropertiesSetInput(props)
-      case _ => AggregateInput(t)
-    }
-}
-
-sealed trait OperandInput extends Input
-
-final case class OperatorInput(operation: Operation) extends Input
-
-final case class HistogramPropertiesSetInput[E](properties: Set[E]) extends OperandInput
-
-final case class HistogramInput[E](histogram: IHistogram[E]) extends OperandInput
-
-final case class AggregateInput[T](obj: T) extends OperandInput
-
-object OpenBracketInput extends Input
-
-object ClosingBracketInput extends Input
-
-case class Query(actionsStack: Query.Stack[Input]) {
+class Query[E](root: Node[E]) {
 
   import ru.hse.se.ba.danilin.paul.histogram.Implicits._
   import ru.hse.se.ba.danilin.paul.histogram.queries.Query.Stack
 
-  def execute(): Either[IHistogram[Any], Double] = {
-    def processOperation[E](operation: Operation, processingStack: Stack[Input]) =
-      operation match {
-        case bOp: HistogramBinaryOperation =>
-          val (HistogramInput(a) :: b :: processingStackLeft) = processingStack
-          val operationResult = b match {
-            case HistogramInput(b) => bOp(a, b)
-            case HistogramPropertiesSetInput(b) => bOp(a, b)
-          }
-          (Input(operationResult), processingStackLeft)
+  def execute(): Either[IHistogram[E], Double] = root.execute()
 
-        case op: HistogramUnaryOperation =>
-          val (HistogramInput(a) :: processingStackLeft) = processingStack
-          (Input(op(a)), processingStackLeft)
-      }
-
-    def innerExecute(queryStack: Stack[Input], processingStack: Stack[Input]): Stack[Input] =
-      if (queryStack.isEmpty) {
-        processingStack
-      } else {
-        val (curInput :: leftQuery) = queryStack
-        curInput match {
-          case _: OperandInput =>
-            innerExecute(leftQuery, curInput :: processingStack)
-          case OperatorInput(operation) =>
-            val (operationResult, processingStackLeft) = processOperation(operation, processingStack)
-            innerExecute(leftQuery, operationResult :: processingStackLeft)
-        }
-      }
-
-    val resultStack = innerExecute(actionsStack, List.empty)
-    val result = resultStack.head
-    result match {
-      case HistogramInput(histogram) => Left(histogram)
-      case AggregateInput(number: Double) => Right(number)
-    }
+  def this(operationsStack: Query.Stack[Input[E]]) = {
+    this(Query.parseStack[E](operationsStack))
   }
 }
 
+sealed trait Node[E] {
+  def execute(): Either[IHistogram[E], Double]
+}
+
+case class BinaryOperationNode[E](operation: HistogramBinaryOperation,
+                                  left: Node[E],
+                                  right: Node[E]) extends Node[E] {
+  override def execute(): Either[IHistogram[E], Double] =
+    Left(operation(left.execute().left.get, right.execute().left.get))
+}
+
+case class UnaryOperationNode[E](operation: HistogramUnaryOperation,
+                                 histogram: Node[E]) extends Node[E] {
+  override def execute(): Either[IHistogram[E], Double] =
+    Left(operation(histogram.execute().left.get))
+}
+
+case class AggregateOperationNode[E](operation: AggregateOperation,
+                                     histogram: Node[E]) extends Node[E] {
+  override def execute(): Either[IHistogram[E], Double] =
+    Right(operation(histogram.execute().left.get))
+}
+
+case class HistogramNode[E](histogram: IHistogram[E]) extends Node[E] {
+  override def execute(): Either[IHistogram[E], Double] =
+    Left(histogram)
+}
+
+case class SubhistogramNode[E](histogram: IHistogram[E],
+                               properties: ElementsUniverse[E]) extends Node[E] {
+  override def execute(): Either[IHistogram[E], Double] =
+    Left(histogram.subHistogram(properties))
+}
+
+
 object Query {
+
+  def parseStack[E](operationsStack: Query.Stack[Input[E]]): Node[E] = {
+    def parseArgument(operationsStack: Query.Stack[Input[E]]): (Node[E], Query.Stack[Input[E]]) = {
+      operationsStack match {
+        case HistogramInput(histogram) :: tail =>
+          (HistogramNode(histogram), tail)
+        case OperatorInput(operation) :: tail =>
+          parseOperation(operation, tail)
+      }
+    }
+
+    def parseOperation(operation: Operation,
+                       operationsStack: Query.Stack[Input[E]]): (Node[E], Query.Stack[Input[E]]) = {
+      operation match {
+        case operation: HistogramUnaryOperation =>
+          val (argument, tail) = parseArgument(operationsStack)
+          (UnaryOperationNode(operation, argument), tail)
+        case operation: AggregateOperation =>
+          val (argument, tail) = parseArgument(operationsStack)
+          (AggregateOperationNode(operation, argument), tail)
+        case operation: HistogramBinaryOperation =>
+          val (leftArgument, tailLeft) = parseArgument(operationsStack)
+          val (rightArgument, tail) =
+            tailLeft match {
+              case HistogramPropertiesSetInput(subset) :: tail =>
+                (SubhistogramNode(leftArgument.execute().left.get, subset), tail)
+
+              case _ => parseArgument(tailLeft)
+            }
+          (BinaryOperationNode(operation, leftArgument, rightArgument), tail)
+      }
+    }
+
+    operationsStack match {
+      case HistogramInput(histogram) :: _ =>
+        HistogramNode(histogram)
+      case OperatorInput(operation) :: tail =>
+        parseOperation(operation, tail)._1
+    }
+  }
+
   type Stack[E] = List[E]
 
-  val standardAliases = Stream(
-    "(" -> OpenBracketInput,
-    ")" -> ClosingBracketInput,
+  def standardAliases[E] = Stream(
+    "(" -> new OpenBracketInput[E],
+    ")" -> new ClosingBracketInput[E],
     "+" -> OperatorInput(Unite),
     "intersect" -> OperatorInput(Intersect),
     "-" -> OperatorInput(Subtract)
   ).toMap
 
-  def fromString(query: String)(implicit aliasToInput: Map[String, Input]): Query =
-    Query(Parser.parse(query)(aliasToInput).get)
+  def apply[E](actionsStack: Query.Stack[Input[E]]) = new Query(actionsStack)
+
+  def fromString[E](query: String)(implicit aliasToInput: Map[String, Input[E]]): Query[E] =
+    Query(new Parser[E].parse(query)(aliasToInput).get)
 }
 
 

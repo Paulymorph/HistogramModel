@@ -1,6 +1,9 @@
 package ru.hse.se.ba.danilin.paul.histogram.operations
 
-object Or extends HistogramBinaryMergeOperation {
+object Besides extends HistogramBinaryMergeOperation {
   override protected def merge(leftCount: Double, rightCount: Double): Double =
-    Unite.max(leftCount, rightCount)
+    if (rightCount > 0)
+      0
+    else
+      leftCount
 }

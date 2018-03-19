@@ -44,7 +44,7 @@ abstract class HistogramBinaryMergeOperation extends HistogramBinaryOperation {
     * @param rightCount the count of an element from the right histogram
     * @return the result count of the element if the resulting histogram
     */
-  protected def merge(leftCount: Int, rightCount: Int): Int
+  protected def merge(leftCount: Double, rightCount: Double): Double
 }
 
 

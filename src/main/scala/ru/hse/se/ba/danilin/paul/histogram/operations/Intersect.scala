@@ -1,8 +1,8 @@
 package ru.hse.se.ba.danilin.paul.histogram.operations
 
 object Intersect extends HistogramBinaryMergeOperation {
-  def min(a: Int, b: Int) = if (a < b) a else b
+  def min(a: Double, b: Double) = if (a < b) a else b
 
-  override protected def merge(leftCount: Int, rightCount: Int) =
+  override protected def merge(leftCount: Double, rightCount: Double) =
     min(leftCount, rightCount)
 }

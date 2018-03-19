@@ -7,7 +7,7 @@ import ru.hse.se.ba.danilin.paul.histogram.operations.{Subtract, Unite}
 class QueryTest extends FunSuite {
   implicit val aliases = new ParserTest().aliases
 
-  def checkQuery(query: String, expectation: Either[IHistogram[Any], Double]) = {
+  def checkQuery[E](query: String, expectation: Either[IHistogram[E], Double]) = {
     assert(Query.fromString(query).execute() == expectation)
   }
 

@@ -1,16 +1,16 @@
 package ru.hse.se.ba.danilin.paul.histogram.queries
 
-object Parser {
+class Parser[E] {
 
   import ru.hse.se.ba.danilin.paul.histogram.queries.Query.Stack
 
-  def parse(query: String)(implicit aliasToInput: Map[String, Input]): Option[Stack[Input]] = {
+  def parse(query: String)(implicit aliasToInput: Map[String, Input[E]]): Option[Stack[Input[E]]] = {
     getLexems(query.replace(" ", ""), List.empty)(aliasToInput)
       .map(toPolishNotation(_))
   }
 
-  def getLexems(query: String, acc: Stack[Input])
-               (implicit aliasToInput: Map[String, Input]): Option[Stack[Input]] = {
+  def getLexems(query: String, acc: Stack[Input[E]])
+               (implicit aliasToInput: Map[String, Input[E]]): Option[Stack[Input[E]]] = {
     if (query.isEmpty)
       Some(acc)
     else {
@@ -25,24 +25,24 @@ object Parser {
     }
   }
 
-  def toPolishNotation(query: Stack[Input],
-                       resultAcc: Stack[Input] = List.empty,
-                       operandsAcc: Stack[Input] = List.empty): Stack[Input] = {
+  def toPolishNotation(query: Stack[Input[E]],
+                       resultAcc: Stack[Input[E]] = List.empty,
+                       operandsAcc: Stack[Input[E]] = List.empty): Stack[Input[E]] = {
     if (query.isEmpty) {
       (operandsAcc ++ resultAcc)
         .reverse
     } else {
       val (newLexem :: left) = query
       newLexem match {
-        case _: OperandInput =>
+        case _: OperandInput[E] =>
           toPolishNotation(left, newLexem :: resultAcc, operandsAcc)
 
-        case OpenBracketInput =>
-          toPolishNotation(left, resultAcc, newLexem :: operandsAcc)
+        case bracket: OpenBracketInput[E] =>
+          toPolishNotation(left, resultAcc, bracket :: operandsAcc)
 
-        case ClosingBracketInput =>
+        case _: ClosingBracketInput[E] =>
           val (beforeBracket, _ :: afterBracket) = operandsAcc.span {
-            case OpenBracketInput => false
+            case _: OpenBracketInput[E] => false
             case _ => true
           }
           toPolishNotation(left, beforeBracket ++ resultAcc, afterBracket)

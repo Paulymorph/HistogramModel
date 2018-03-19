@@ -7,21 +7,21 @@ class ParserTest extends FunSuite {
 
   import ru.hse.se.ba.danilin.paul.histogram.Implicits.{toHistogramClass, stringToWords}
 
-  implicit val aliases = Seq(
-    "(" -> OpenBracketInput,
-    ")" -> ClosingBracketInput,
-    "+" -> OperatorInput(Unite),
-    "intersect" -> OperatorInput(Intersect),
-    "-" -> OperatorInput(Subtract),
-    "a" -> HistogramInput("a".toHistogram),
-    "ab" -> HistogramInput("a b".toHistogram),
-    "abc" -> HistogramInput("a b c".toHistogram),
-    "abb" -> HistogramInput("a b b".toHistogram)
+  val aliases = Seq(
+    "(" -> new OpenBracketInput[String],
+    ")" -> new ClosingBracketInput[String],
+    "+" -> OperatorInput[String](Unite),
+    "intersect" -> OperatorInput[String](Intersect),
+    "-" -> OperatorInput[String](Subtract),
+    "a" -> HistogramInput[String]("a".toHistogram),
+    "ab" -> HistogramInput[String]("a b".toHistogram),
+    "abc" -> HistogramInput[String]("a b c".toHistogram),
+    "abb" -> HistogramInput[String]("a b b".toHistogram)
   ).toMap
 
   def checkParser(query: String, expectation: List[String]) = {
     val expectationToInputs = expectation map (aliases(_))
-    assert(Parser.parse(query).contains(expectationToInputs))
+    assert(new Parser[String].parse(query)(aliases).contains(expectationToInputs))
   }
 
   test("parse on 'ab + a' should give ab :: a :: +") {
