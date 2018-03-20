@@ -8,8 +8,12 @@ import ru.hse.se.ba.danilin.paul.histogram.queries.{HistogramInput, Input, Query
 
 object Main {
   def main(args: Array[String]): Unit = {
-    val aliases = (Query.standardAliases[String] + ("a" -> HistogramInput[String]("a".toHistogram))).asInstanceOf[Map[String, Input[String]]]
-    val a = Query.fromString[String]("a+a")(aliases)
+    val aliases = (Query.standardAliases[String] +
+      ("a" -> HistogramInput[String]("a".toHistogram))+
+      ("b" -> HistogramInput[String]("b".toHistogram))+
+      ("c" -> HistogramInput[String]("c".toHistogram))
+      ).asInstanceOf[Map[String, Input[String]]]
+    val a = Query.fromString[String]("a-(b+c)")(aliases)
 //    val b = Query.fromString("a+a")(aliases)
     val res = a.execute()
 //    val resb = b.execute()

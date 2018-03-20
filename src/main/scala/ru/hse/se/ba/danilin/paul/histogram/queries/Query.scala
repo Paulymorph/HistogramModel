@@ -6,7 +6,6 @@ import ru.hse.se.ba.danilin.paul.histogram.operations._
 class Query[E](root: Node[E]) {
 
   import ru.hse.se.ba.danilin.paul.histogram.Implicits._
-  import ru.hse.se.ba.danilin.paul.histogram.queries.Query.Stack
 
   def execute(): Either[IHistogram[E], Double] = root.execute()
 
@@ -52,44 +51,28 @@ case class SubhistogramNode[E](histogram: IHistogram[E],
 
 object Query {
 
-  def parseStack[E](operationsStack: Query.Stack[Input[E]]): Node[E] = {
-    def parseArgument(operationsStack: Query.Stack[Input[E]]): (Node[E], Query.Stack[Input[E]]) = {
+  def parseStack[E](operationsStack: Stack[Input[E]]): Node[E] = {
+    def innerParse[E](operationsStack: Stack[Input[E]],
+                      argumentsStack: Stack[Node[E]] = List.empty): Stack[Node[E]] = {
       operationsStack match {
-        case HistogramInput(histogram) :: tail =>
-          (HistogramNode(histogram), tail)
-        case OperatorInput(operation) :: tail =>
-          parseOperation(operation, tail)
+        case Nil => argumentsStack
+        case HistogramInput(hist) :: tail => innerParse(tail, HistogramNode(hist) :: argumentsStack)
+        case OperatorInput(operator) :: operationsTail =>
+          operator match {
+            case op: HistogramUnaryOperation =>
+              argumentsStack match {
+                case head :: argumentsTail =>
+                  innerParse(operationsTail, UnaryOperationNode(op, head) :: argumentsTail)
+              }
+            case op: HistogramBinaryOperation =>
+              argumentsStack match {
+                case second :: first :: argumentsTail =>
+                  innerParse(operationsTail, BinaryOperationNode(op, first, second) :: argumentsTail)
+              }
+          }
       }
     }
-
-    def parseOperation(operation: Operation,
-                       operationsStack: Query.Stack[Input[E]]): (Node[E], Query.Stack[Input[E]]) = {
-      operation match {
-        case operation: HistogramUnaryOperation =>
-          val (argument, tail) = parseArgument(operationsStack)
-          (UnaryOperationNode(operation, argument), tail)
-        case operation: AggregateOperation =>
-          val (argument, tail) = parseArgument(operationsStack)
-          (AggregateOperationNode(operation, argument), tail)
-        case operation: HistogramBinaryOperation =>
-          val (leftArgument, tailLeft) = parseArgument(operationsStack)
-          val (rightArgument, tail) =
-            tailLeft match {
-              case HistogramPropertiesSetInput(subset) :: tail =>
-                (SubhistogramNode(leftArgument.execute().left.get, subset), tail)
-
-              case _ => parseArgument(tailLeft)
-            }
-          (BinaryOperationNode(operation, leftArgument, rightArgument), tail)
-      }
-    }
-
-    operationsStack match {
-      case HistogramInput(histogram) :: _ =>
-        HistogramNode(histogram)
-      case OperatorInput(operation) :: tail =>
-        parseOperation(operation, tail)._1
-    }
+    innerParse(operationsStack).head
   }
 
   type Stack[E] = List[E]
