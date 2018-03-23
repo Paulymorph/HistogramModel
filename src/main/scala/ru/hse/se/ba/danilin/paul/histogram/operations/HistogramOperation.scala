@@ -47,10 +47,8 @@ abstract class HistogramBinaryMergeOperation extends HistogramBinaryOperation {
   protected def merge(leftCount: Double, rightCount: Double): Double
 }
 
-
-
 abstract class AggregateOperation extends Operation {
-  def apply[E](histogram: IHistogram[E]): Double
+  def apply[E](left: IHistogram[E], right: IHistogram[E]): Double
 
-  override val narity: Double = 1
+  override val narity: Double = 2
 }
