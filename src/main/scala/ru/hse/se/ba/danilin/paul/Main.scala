@@ -13,10 +13,5 @@ object Main {
       ("b" -> HistogramInput[String]("b".toHistogram))+
       ("c" -> HistogramInput[String]("c".toHistogram))
       ).asInstanceOf[Map[String, Input[String]]]
-    val a = Query.fromString[String]("aliasss-(b+c)")(aliases)
-//    val b = Query.fromString("a+a")(aliases)
-    val res = a.execute()
-//    val resb = b.execute()
-    print("OK")
   }
 }

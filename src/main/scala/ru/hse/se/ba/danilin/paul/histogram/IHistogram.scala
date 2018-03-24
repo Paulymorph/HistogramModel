@@ -1,6 +1,6 @@
 package ru.hse.se.ba.danilin.paul.histogram
 
-import ru.hse.se.ba.danilin.paul.histogram.operations.{Intersect, Subtract, Unite}
+import ru.hse.se.ba.danilin.paul.histogram.operations._
 
 trait IHistogram[E] {
   def apply(element: E): Double
@@ -20,4 +20,27 @@ trait IHistogram[E] {
   def unite(other: ElementsUniverse[E]): IHistogram[E] = Unite(this, other)
   def +(other: IHistogram[E]): IHistogram[E] = unite(other)
   def +(other: ElementsUniverse[E]): IHistogram[E] = unite(other)
+
+  def and(other: IHistogram[E]): IHistogram[E] = And(this, other)
+  def and(other: ElementsUniverse[E]): IHistogram[E] = And(this, other)
+  def &(other: IHistogram[E]): IHistogram[E] = and(other)
+  def &(other: ElementsUniverse[E]): IHistogram[E] = and(other)
+
+  def besides(other: IHistogram[E]): IHistogram[E] = Besides(this, other)
+  def besides(other: ElementsUniverse[E]): IHistogram[E] = Besides(this, other)
+
+  def not = Not(this)
+
+  def or(other: IHistogram[E]): IHistogram[E] = Or(this, other)
+  def or(other: ElementsUniverse[E]): IHistogram[E] = Or(this, other)
+  def |(other: IHistogram[E]): IHistogram[E] = or(other)
+  def |(other: ElementsUniverse[E]): IHistogram[E] = or(other)
+
+  def xor(other: IHistogram[E]): IHistogram[E] = Xor(this, other)
+  def xor(other: ElementsUniverse[E]): IHistogram[E] = Xor(this, other)
+
+  def similar(other: IHistogram[E]) = Similar(this, other)
+
+  def xbesides(other: IHistogram[E]): IHistogram[E] = XBesides(this, other)
+  def xbesides(other: ElementsUniverse[E]): IHistogram[E] = XBesides(this, other)
 }

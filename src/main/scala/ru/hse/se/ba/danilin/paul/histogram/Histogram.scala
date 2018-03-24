@@ -21,12 +21,9 @@ object Histogram {
   def extract[S, O](source: S)(implicit atomizer: IAtomizer[S, O]): IHistogram[O] = {
     val atoms = atomizer atomize source
     val histMap = atoms.foldLeft(Map.empty[O, Double])({
-      case (acc, i) =>
-        val newCount = acc.get(i) match {
-          case None => 1
-          case Some(prevCount) => prevCount + 1
-        }
-        acc + (i -> newCount)
+      case (elementsMap, i) =>
+        val newCount = elementsMap.get(i).fold(1.)(_ + 1)
+        elementsMap + (i -> newCount)
     })
     Histogram(histMap)
   }
