@@ -22,7 +22,7 @@ object Histogram {
     val atoms = atomizer atomize source
     val histMap = atoms.foldLeft(Map.empty[O, Double])({
       case (elementsMap, i) =>
-        val newCount = elementsMap.get(i).fold(1.)(_ + 1)
+        val newCount = elementsMap.get(i).fold(1.0)(_ + 1)
         elementsMap + (i -> newCount)
     })
     Histogram(histMap)

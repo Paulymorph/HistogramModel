@@ -4,3 +4,5 @@
 !/build.sbt
 !/src/
 /src/Example/
+!/Demonstration/
+*checkpoint*
