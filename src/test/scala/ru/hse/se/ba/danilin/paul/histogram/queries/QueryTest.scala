@@ -1,12 +1,12 @@
 package ru.hse.se.ba.danilin.paul.histogram.queries
 
 import org.scalatest.FunSuite
-import ru.hse.se.ba.danilin.paul.histogram.IHistogram
+import ru.hse.se.ba.danilin.paul.histogram.Histogram
 
 import ru.hse.se.ba.danilin.paul.histogram.Implicits.{SetUniverse, toHistogramClass, stringToWords}
 
 class QueryTest extends FunSuite {
-  val histogram: IHistogram[String] = "a b c a a b b a a".toHistogram
+  val histogram: Histogram[String] = "a b c a a b b a a".toHistogram
 
   val aSub = Set("a")
   val bSub = Set("b")
@@ -17,7 +17,7 @@ class QueryTest extends FunSuite {
       ("b" -> HistogramPropertiesSetInput(bSub)) +
       ("c" -> HistogramPropertiesSetInput(cSub))).asInstanceOf[Map[String, Input[String]]]
 
-  def checkQuery(queryString: String, expectation: Either[IHistogram[String], Double], histogram: IHistogram[String] = histogram) = {
+  def checkQuery(queryString: String, expectation: Either[Histogram[String], Double], histogram: Histogram[String] = histogram) = {
     val query = Query.fromString(queryString)
     val result = query.execute(histogram)
     assert(result == expectation)
