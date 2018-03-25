@@ -1,10 +1,10 @@
 package ru.hse.se.ba.danilin.paul.histogram.queries
 
 import ru.hse.se.ba.danilin.paul.histogram.operations._
-import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, IHistogram, ZeroHistogram}
+import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, Histogram, ZeroHistogram}
 
 object TreeExecutor {
-  def execute[E](tree: Node[E]): Either[IHistogram[E], Double] = {
+  def execute[E](tree: Node[E]): Either[Histogram[E], Double] = {
     def extract(node: Node[E]) = {
       execute(node).left.get
     }
@@ -29,7 +29,7 @@ object TreeExecutor {
 }
 
 class Query[E](root: Node[E]) {
-  def execute(histogram: IHistogram[E]): Either[IHistogram[E], Double] = {
+  def execute(histogram: Histogram[E]): Either[Histogram[E], Double] = {
     val preprocessed = root.map {
       case SubhistogramNode(properties, None) =>
         SubhistogramNode(properties, Some(histogram))

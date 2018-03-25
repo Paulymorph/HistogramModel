@@ -1,6 +1,6 @@
 package ru.hse.se.ba.danilin.paul.histogram.queries
 
-import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, IHistogram}
+import ru.hse.se.ba.danilin.paul.histogram.{ElementsUniverse, Histogram}
 import ru.hse.se.ba.danilin.paul.histogram.operations.{AggregateOperation, HistogramBinaryOperation, HistogramUnaryOperation}
 
 sealed trait Node[E] {
@@ -27,13 +27,13 @@ case class AggregateOperationNode[E](operation: AggregateOperation,
   override def map(f: Node[E] => Node[E]): Node[E] = f(AggregateOperationNode(operation, left.map(f), right.map(f)))
 }
 
-case class HistogramNode[E](histogram: IHistogram[E]) extends Node[E] {
+case class HistogramNode[E](histogram: Histogram[E]) extends Node[E] {
 
   override def map(f: Node[E] => Node[E]): Node[E] = f(this)
 }
 
 case class SubhistogramNode[E](properties: ElementsUniverse[E],
-                               originOpt: Option[IHistogram[E]] = None) extends Node[E] {
+                               originOpt: Option[Histogram[E]] = None) extends Node[E] {
 
   override def map(f: Node[E] => Node[E]): Node[E] = f(this)
 }

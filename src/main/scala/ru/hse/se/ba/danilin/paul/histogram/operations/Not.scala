@@ -1,7 +1,7 @@
 package ru.hse.se.ba.danilin.paul.histogram.operations
-import ru.hse.se.ba.danilin.paul.histogram.{IHistogram, OneHistogram}
+import ru.hse.se.ba.danilin.paul.histogram.{Histogram, OneHistogram}
 
 object Not extends HistogramUnaryOperation {
-  override def apply[E](histogram: IHistogram[E]): IHistogram[E] =
+  override def apply[E](histogram: Histogram[E]): Histogram[E] =
     new OneHistogram[E]()(histogram.elementsUniverse) besides histogram
 }

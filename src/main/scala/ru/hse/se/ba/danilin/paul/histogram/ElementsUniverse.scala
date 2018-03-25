@@ -1,5 +1,5 @@
 package ru.hse.se.ba.danilin.paul.histogram
 
-abstract class ElementsUniverse[E] {
+trait ElementsUniverse[E] {
   def isElementInUniverse(element: E): Boolean
 }
