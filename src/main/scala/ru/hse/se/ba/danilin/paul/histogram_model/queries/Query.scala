@@ -22,7 +22,8 @@ object TreeExecutor {
       case HistogramNode(histogram) =>
         Left(histogram)
 
-      case SubhistogramNode(properties, origin) =>
+      case SubhistogramNode(properties, originNode) =>
+        val origin = originNode.map(execute(_).left.get)
         Left(origin.map(_.subHistogram(properties)).getOrElse(new ZeroHistogram()(properties)))
     }
   }
@@ -32,7 +33,7 @@ class Query[E](root: Node[E]) {
   def execute(histogram: Histogram[E]): Either[Histogram[E], Double] = {
     val preprocessed = root.map {
       case SubhistogramNode(properties, None) =>
-        SubhistogramNode(properties, Some(histogram))
+        SubhistogramNode(properties, Some(HistogramNode(histogram)))
 
       case node => node
     }
@@ -54,10 +55,10 @@ object Query {
 
         case HistogramInput(hist) :: tail => innerParse(tail, HistogramNode(hist) :: argumentsStack)
 
-        case HistogramPropertiesSetInput(properties) :: tail =>
+        case SubhistogramInput(properties) :: tail =>
           innerParse(tail, SubhistogramNode(properties) :: argumentsStack)
 
-        case OperatorInput(operator) :: operationsTail =>
+        case OperationInput(operator) :: operationsTail =>
           operator match {
             case op: HistogramUnaryOperation =>
               argumentsStack match {
@@ -78,20 +79,20 @@ object Query {
 
   type Stack[E] = List[E]
 
-  def standardAliases[E] = Stream(
+  def standardAliases[E] = Map(
     "(" -> new OpenBracketInput[E],
     ")" -> new ClosingBracketInput[E],
-    "+" -> OperatorInput(Unite),
-    "intersect" -> OperatorInput(Intersect),
-    "-" -> OperatorInput(Subtract),
-    "&" -> OperatorInput(And),
-    "|" -> OperatorInput(Or),
-    "xor" -> OperatorInput(Xor),
-    "not" -> OperatorInput(Not),
-    "besides" -> OperatorInput(Besides),
-    "xbesides" -> OperatorInput(XBesides),
-    "sim" -> OperatorInput(Similar)
-  ).toMap
+    "+" -> OperationInput(Unite),
+    "intersect" -> OperationInput(Intersect),
+    "-" -> OperationInput(Subtract),
+    "&" -> OperationInput(And),
+    "|" -> OperationInput(Or),
+    "xor" -> OperationInput(Xor),
+    "not" -> OperationInput(Not),
+    "besides" -> OperationInput(Besides),
+    "xbesides" -> OperationInput(XBesides),
+    "sim" -> OperationInput(Similar)
+  )
 
   def apply[E](actionsStack: Query.Stack[Input[E]]) = new Query(actionsStack)
 

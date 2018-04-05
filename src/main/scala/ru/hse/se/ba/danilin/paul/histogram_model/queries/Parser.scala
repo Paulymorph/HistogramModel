@@ -34,7 +34,7 @@ class Parser[E] {
     } else {
       val (newLexem :: left) = query
       newLexem match {
-        case _: OperandInput[E] =>
+        case _: OperatorInput[E] =>
           toPolishNotation(left, newLexem :: resultAcc, operandsAcc)
 
         case bracket: OpenBracketInput[E] =>
@@ -47,9 +47,9 @@ class Parser[E] {
           }
           toPolishNotation(left, beforeBracket ++ resultAcc, afterBracket)
 
-        case OperatorInput(_) =>
+        case OperationInput(_) =>
           val (stackOperations, operandsLeft) = operandsAcc span {
-            case OperatorInput(_) => true
+            case OperationInput(_) => true
             case _ => false
           }
           toPolishNotation(left, stackOperations ++ resultAcc, newLexem::operandsLeft)

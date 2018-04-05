@@ -33,7 +33,7 @@ case class HistogramNode[E](histogram: Histogram[E]) extends Node[E] {
 }
 
 case class SubhistogramNode[E](properties: ElementsUniverse[E],
-                               originOpt: Option[Histogram[E]] = None) extends Node[E] {
+                               originOpt: Option[Node[E]] = None) extends Node[E] {
 
   override def map(f: Node[E] => Node[E]): Node[E] = f(this)
 }

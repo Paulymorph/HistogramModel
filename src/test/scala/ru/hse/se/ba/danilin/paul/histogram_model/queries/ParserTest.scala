@@ -10,9 +10,9 @@ class ParserTest extends FunSuite {
   val aliases = Seq(
     "(" -> new OpenBracketInput[String],
     ")" -> new ClosingBracketInput[String],
-    "+" -> OperatorInput[String](Unite),
-    "intersect" -> OperatorInput[String](Intersect),
-    "-" -> OperatorInput[String](Subtract),
+    "+" -> OperationInput[String](Unite),
+    "intersect" -> OperationInput[String](Intersect),
+    "-" -> OperationInput[String](Subtract),
     "a" -> HistogramInput[String]("a".toHistogram),
     "ab" -> HistogramInput[String]("a b".toHistogram),
     "abc" -> HistogramInput[String]("a b c".toHistogram),

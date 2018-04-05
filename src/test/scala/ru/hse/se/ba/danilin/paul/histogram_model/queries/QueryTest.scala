@@ -12,9 +12,9 @@ class QueryTest extends FunSuite {
   val cSub = Set("c")
 
   implicit val aliases: Map[String, Input[String]] = (Query.standardAliases +
-      ("a" -> HistogramPropertiesSetInput(aSub)) +
-      ("b" -> HistogramPropertiesSetInput(bSub)) +
-      ("c" -> HistogramPropertiesSetInput(cSub))).asInstanceOf[Map[String, Input[String]]]
+      ("a" -> SubhistogramInput(aSub)) +
+      ("b" -> SubhistogramInput(bSub)) +
+      ("c" -> SubhistogramInput(cSub))).asInstanceOf[Map[String, Input[String]]]
 
   def checkQuery(queryString: String, expectation: Either[Histogram[String], Double], histogram: Histogram[String] = histogram) = {
     val query = Query.fromString(queryString)
