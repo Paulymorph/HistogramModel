@@ -20,11 +20,11 @@ sealed trait Pixel
 object Pixel {
   def apply(pixel: Color): Pixel = {
     val (r, g, b) = (pixel.getRed, pixel.getGreen, pixel.getBlue)
-    val max = math.max(math.max(r, g), b)
-    pixel match {
-      case _ if r == max => Red
-      case _ if g == max => Green
-      case _ if b == max => Blue
+    val maxColorValue = List(r, g, b).max
+    maxColorValue match {
+      case `r` => Red
+      case `g` => Green
+      case `b` => Blue
     }
   }
 }

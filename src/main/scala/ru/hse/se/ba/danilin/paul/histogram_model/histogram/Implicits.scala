@@ -11,6 +11,12 @@ object Implicits {
     override def isElementInUniverse(element: E): Boolean = unverseSet.contains(element)
   }
 
+//  implicit val blueEncoder: Encoder[Pixel] = deriveEncoder
+//  implicit val histStringDecoder: Decoder[HistogramImpl[String]] = deriveDecoder
+//  implicit val histStringEncoder: Encoder[HistogramImpl[String]] = deriveEncoder
+////  implicit val histPixelDecoder: Decoder[HistogramImpl[Pixel]] = deriveDecoder
+//  implicit val histPixelEncoder: Encoder[HistogramImpl[Pixel]] = deriveEncoder
+
   implicit val stringToWords: StringAtomizer[String] = new StringToWords
 
   implicit val imageToPixels: ImageAtomizer[Pixel] = new ImageToPixels
