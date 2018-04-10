@@ -15,6 +15,11 @@ case class HistogramImpl[O](histogram: Map[O, Double])(implicit universe: Elemen
     val filteredHistogram = histogram.filterKeys(element => newElementsUniverse.isElementInUniverse(element))
     HistogramImpl(filteredHistogram)(newElementsUniverse)
   }
+
+  override def normalize(): Histogram[O] = {
+    val n = histogram.values.sum
+    HistogramImpl(histogram.mapValues(_ / n))
+  }
 }
 
 object HistogramImpl {

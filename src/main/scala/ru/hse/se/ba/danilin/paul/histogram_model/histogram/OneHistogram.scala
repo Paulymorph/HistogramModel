@@ -8,4 +8,6 @@ class OneHistogram[E](implicit universe: ElementsUniverse[E]) extends Histogram[
   override val elementsPresent: Set[E] = Set.empty[E]
 
   override def subHistogram(elements: ElementsUniverse[E]): Histogram[E] = new OneHistogram()(elements)
+
+  override def normalize(): Histogram[E] = this
 }

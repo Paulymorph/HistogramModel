@@ -43,4 +43,6 @@ trait Histogram[E] {
 
   def xbesides(other: Histogram[E]): Histogram[E] = XBesides(this, other)
   def xbesides(other: ElementsUniverse[E]): Histogram[E] = XBesides(this, other)
+
+  def normalize(): Histogram[E]
 }
