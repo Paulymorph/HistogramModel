@@ -8,3 +8,4 @@
 *checkpoint*
 !*Diagrams*
 *.jpg
+!/project/assembly.sbt

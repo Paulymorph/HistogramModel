@@ -1,15 +1,20 @@
 package ru.hse.se.ba.danilin.paul.histogram_model.atomizers
+
 import java.awt.Color
 import java.awt.image.BufferedImage
 
 class ImageToPixels extends ImageAtomizer[Pixel] {
   override def atomize(source: BufferedImage): Iterable[Pixel] = {
-    (for {
+    val rawPixels = for {
       x <- 0 until source.getWidth
       y <- 0 until source.getHeight
       rawPixel = source.getRGB(x, y)
       pixel = new Color(rawPixel)
-    } yield Pixel(pixel)).flatten
+    } yield pixel
+
+    rawPixels.par
+      .flatMap(Pixel(_))
+      .toList
   }
 
   override def isElementInUniverse(element: Pixel): Boolean = true
