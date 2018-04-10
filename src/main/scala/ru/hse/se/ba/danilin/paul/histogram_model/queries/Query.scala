@@ -1,7 +1,7 @@
 package ru.hse.se.ba.danilin.paul.histogram_model.queries
 
-import ru.hse.se.ba.danilin.paul.histogram_model.operations._
 import ru.hse.se.ba.danilin.paul.histogram_model.histogram.{Histogram, ZeroHistogram}
+import ru.hse.se.ba.danilin.paul.histogram_model.operations._
 
 object TreeExecutor {
   def execute[E](tree: Node[E]): Either[Histogram[E], Double] = {
@@ -31,13 +31,17 @@ object TreeExecutor {
 
 class Query[E](root: Node[E]) {
   def execute(histogram: Histogram[E]): Either[Histogram[E], Double] = {
-    val preprocessed = root.map {
+    val preprocessed = injectHistogram(histogram)
+    TreeExecutor.execute(preprocessed)
+  }
+
+  def injectHistogram(histogram: Histogram[E]): Node[E] = {
+    root.map {
       case SubhistogramNode(properties, None) =>
         SubhistogramNode(properties, Some(HistogramNode(histogram)))
 
       case node => node
     }
-    TreeExecutor.execute(preprocessed)
   }
 
   def this(operationsStack: Query.Stack[Input[E]]) = {

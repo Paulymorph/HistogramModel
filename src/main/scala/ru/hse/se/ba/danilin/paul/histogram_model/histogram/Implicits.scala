@@ -1,5 +1,7 @@
 package ru.hse.se.ba.danilin.paul.histogram_model.histogram
 
+import io.circe._
+import io.circe.generic.semiauto._
 import ru.hse.se.ba.danilin.paul.histogram_model.atomizers._
 
 object Implicits {
@@ -12,9 +14,9 @@ object Implicits {
   }
 
 //  implicit val blueEncoder: Encoder[Pixel] = deriveEncoder
-//  implicit val histStringDecoder: Decoder[HistogramImpl[String]] = deriveDecoder
-//  implicit val histStringEncoder: Encoder[HistogramImpl[String]] = deriveEncoder
-////  implicit val histPixelDecoder: Decoder[HistogramImpl[Pixel]] = deriveDecoder
+  implicit val histStringDecoder: Decoder[HistogramImpl[String]] = deriveDecoder
+  implicit val histStringEncoder: Encoder[HistogramImpl[String]] = deriveEncoder
+//  implicit val histPixelDecoder: Decoder[HistogramImpl[Pixel]] = deriveDecoder
 //  implicit val histPixelEncoder: Encoder[HistogramImpl[Pixel]] = deriveEncoder
 
   implicit val stringToWords: StringAtomizer[String] = new StringToWords
