@@ -10,3 +10,4 @@
 *.jpg
 !/project/assembly.sbt
 !/Tests/
+*.jar
