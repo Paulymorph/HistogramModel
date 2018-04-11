@@ -3,21 +3,58 @@ package ru.hse.se.ba.danilin.paul.histogram_model.histogram
 import org.json4s.{CustomSerializer, Formats, JDouble, JField, JObject}
 import ru.hse.se.ba.danilin.paul.histogram_model.atomizers._
 
+/**
+  * The object with implicits for the project
+  */
 object Implicits {
-  implicit class toHistogramClass[S, O](source: S)(implicit atomizer: Atomizer[S, O]) {
+
+  /**
+    * Class to add `toHistogram` method to any class
+    * @param source The source to extract histogram from
+    * @param atomizer The atomizer for histogram construction
+    * @tparam S The type of the source
+    * @tparam O The type of the elements
+    */
+  implicit class ToHistogramClass[S, O](source: S)(implicit atomizer: Atomizer[S, O]) {
+    /**
+      * Extracts histogram from the object
+      * @return The histogram extracted from this
+      */
     def toHistogram = HistogramImpl.extract(source)(atomizer)
   }
 
+  /**
+    * An implicit class for construction universe from a set of elements
+    * @param unverseSet The set of elements for the universe
+    * @tparam E The element type
+    */
   implicit class SetUniverse[E](unverseSet: Set[E]) extends ElementsUniverse[E] {
+    /**
+      * If the element in the set universe
+      * @param element The element to check
+      * @return True if the element is in universe, false otherwise
+      */
     override def isElementInUniverse(element: E): Boolean = unverseSet.contains(element)
   }
 
+  /**
+    * String => words atomizer
+    */
   implicit val stringToWords: StringAtomizer[String] = new StringToWords
 
-  implicit val imageToPixels: ImageAtomizer[Color] = new ImageToPixels
+  /**
+    * Image => colors atomizer
+    */
+  implicit val imageToPixelColors: ImageAtomizer[Color] = new ImageToPixels
 
+  /**
+    * Serialization formats
+    */
   implicit val formats: Formats = org.json4s.DefaultFormats + new StringHistSerializer + new PixelHistSerializer
 
+  /**
+    * String histogram serializer
+    */
   class StringHistSerializer extends CustomSerializer[HistogramImpl[String]](format => (
     {
       case JObject(JField("histogram", JObject(s)) :: Nil) =>
@@ -34,6 +71,9 @@ object Implicits {
     }
   ))
 
+  /**
+    * Color histogram serializer
+    */
   class PixelHistSerializer extends CustomSerializer[HistogramImpl[Color]](format => (
     {
       case JObject(JField("histogram", JObject(s)) :: Nil) =>

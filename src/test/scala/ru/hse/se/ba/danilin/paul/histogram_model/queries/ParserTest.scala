@@ -5,7 +5,7 @@ import ru.hse.se.ba.danilin.paul.histogram_model.operations.{Intersect, Subtract
 
 class ParserTest extends FunSuite {
 
-  import ru.hse.se.ba.danilin.paul.histogram_model.histogram.Implicits.{toHistogramClass, stringToWords}
+  import ru.hse.se.ba.danilin.paul.histogram_model.histogram.Implicits.{ToHistogramClass, stringToWords}
 
   val aliases = Seq(
     "(" -> new OpenBracketInput[String],
