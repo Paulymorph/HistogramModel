@@ -9,3 +9,4 @@
 !*Diagrams*
 *.jpg
 !/project/assembly.sbt
+!/Tests/

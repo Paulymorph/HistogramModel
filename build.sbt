@@ -11,11 +11,7 @@ lazy val root = (project in file("."))
     ),
     libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.4",
     libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.4" % "test",
-    libraryDependencies ++= Seq(
-      "io.circe" %% "circe-core",
-      "io.circe" %% "circe-generic",
-      "io.circe" %% "circe-parser"
-    ).map(_ % circeVersion)
+    libraryDependencies += "org.json4s" %% "json4s-native" % "3.5.3"
   )
 
 resolvers += Resolver.sonatypeRepo("releases")
