@@ -9,26 +9,32 @@ import java.awt.{Color => JColor}
 class ImageToPixels extends ImageAtomizer[Color] {
   /**
     * Parses an image
+    *
     * @param source The source image to parse
     * @return Sequence of pixels colors the source has been split on
     */
   override def atomize(source: BufferedImage): Iterable[Color] = {
-    val rawPixels = for {
-      x <- 0 until source.getWidth
-      y <- 0 until source.getHeight
-      rawPixel = source.getRGB(x, y)
-      pixel = new JColor(rawPixel)
-    } yield pixel
+    val rawPixels = TimeUtils.time({
+      for {
+        x <- 0 until source.getWidth
+        y <- 0 until source.getHeight
+        rawPixel = source.getRGB(x, y)
+        pixel = new JColor(rawPixel)
+      } yield pixel
+    }, Some("for"))
 
-    val rawParallel = rawPixels.par
-    val colorsMapped = rawParallel.flatMap(Color(_))
+    TimeUtils.time({
+      val rawParallel = rawPixels.par
+      val colorsMapped = rawParallel.flatMap(Color(_))
 
-    colorsMapped
-      .toList
+      colorsMapped
+        .toList
+    }, Some("map"))
   }
 
   /**
     * Finds out if the Color is in the projection space
+    *
     * @param element The element to check
     * @return True for any color
     */
@@ -39,8 +45,20 @@ class ImageToPixels extends ImageAtomizer[Color] {
   * The color of pixel
   */
 sealed trait Color {
+  protected def max(r: Int, g: Int, b: Int) = {
+    if (r > g) {
+      if (r > b)
+        r
+      else
+        b
+    } else if (g > b)
+      g
+    else b
+  }
+
   /**
     * Whether the pixel is of the color
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
@@ -53,15 +71,18 @@ object Color {
   /**
     * All colors possible
     */
-  val allColors = List(Red, Green, Blue, Yellow, Magenta, Cyan)
+  val allColors = List(Red, Green, Blue, Yellow, GreenYellow, LightBlue)
 
   /**
     * Finds out the colors of the pixel
+    *
     * @param pixel The pixel to check colors of
     * @return The colors of the pixel
     */
-  def apply(pixel: JColor): Iterable[Color] = {
-    val (r, g, b) = (pixel.getRed, pixel.getGreen, pixel.getBlue)
+  def apply(pixel: JColor) = {
+    val r = pixel.getRed
+    val g = pixel.getGreen
+    val b = pixel.getBlue
     allColors.filter(pixel => pixel.is(r, g, b))
   }
 }
@@ -74,13 +95,14 @@ object Red extends Color {
 
   /**
     * If the pixel is red
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
     * @return True if the pixel is of the color, false otherwise
     */
   override def is(r: Int, g: Int, b: Int): Boolean =
-    r == List(r, g, b).max
+    r == max(r, g, b)
 }
 
 /**
@@ -91,13 +113,14 @@ object Green extends Color {
 
   /**
     * If the pixel is green
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
     * @return True if the pixel is of the color, false otherwise
     */
   override def is(r: Int, g: Int, b: Int): Boolean =
-    g == List(r, g, b).max
+    g == max(r, g, b)
 }
 
 /**
@@ -108,13 +131,14 @@ object Blue extends Color {
 
   /**
     * If the pixel is blue
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
     * @return True if the pixel is of the color, false otherwise
     */
   override def is(r: Int, g: Int, b: Int): Boolean =
-    b == List(r, g, b).max
+    b == max(r, g, b)
 }
 
 /**
@@ -123,6 +147,7 @@ object Blue extends Color {
 abstract class SecondaryPixel extends Color {
   /**
     * The "certainty" of the secondary color
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
@@ -137,6 +162,7 @@ abstract class SecondaryPixel extends Color {
 
   /**
     * If the pixel of the secondary color
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
@@ -155,6 +181,7 @@ object Yellow extends SecondaryPixel {
 
   /**
     * The yellow component
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
@@ -171,6 +198,7 @@ object Magenta extends SecondaryPixel {
 
   /**
     * The magenta component
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
@@ -187,10 +215,27 @@ object Cyan extends SecondaryPixel {
 
   /**
     * The cyan component
+    *
     * @param r The red component of the pixel
     * @param g The green component of the pixel
     * @param b The blue component of the pixel
     * @return A number representing the certainty of the pixel being of the color
     */
   override protected def secondaryPixel(r: Int, g: Int, b: Int): Double = g + b
+}
+
+object LightBlue extends Color {
+  override def toString: String = "LIGHT BLUE"
+
+  val threshold = 256 * 3 / 2
+
+  override def is(r: Int, g: Int, b: Int): Boolean = {
+    Blue.is(r, g, b) && (r + g + b > threshold)
+  }
+}
+
+object GreenYellow extends Color {
+  override def toString: String = "GREEN YELLOW"
+
+  override def is(r: Int, g: Int, b: Int): Boolean = Green.is(r, g, b) && Yellow.is(r, g, b)
 }

@@ -3,9 +3,8 @@ package ru.hse.se.ba.danilin.paul
 import java.io.File
 
 import javax.imageio.ImageIO.{read => readImage}
-import org.json4s.native.Serialization.{write, read => readJson}
+import org.json4s.native.Serialization.{read => readJson}
 import ru.hse.se.ba.danilin.paul.histogram_model.atomizers._
-import ru.hse.se.ba.danilin.paul.histogram_model.histogram.HistogramImpl
 import ru.hse.se.ba.danilin.paul.histogram_model.histogram.Implicits._
 import ru.hse.se.ba.danilin.paul.histogram_model.queries.{HistogramInput, Input, Query, SubhistogramInput}
 
@@ -40,10 +39,10 @@ object Main {
 
 
 
-    val h = HistogramImpl.extract("d f")
-    val ser = write(r)
-    val out = readJson[HistogramImpl[Color]](ser)
-    println(ser)
+//    val h = HistogramImpl.extract("d f")
+//    val ser = write(r)
+//    val out = readJson[HistogramImpl[Color]](ser)
+//    println(ser)
   }
 }
 
