@@ -3,10 +3,12 @@ package ru.hse.se.ba.danilin.paul.histogram_model.operations
 import ru.hse.se.ba.danilin.paul.histogram_model.histogram.Implicits.SetUniverse
 import ru.hse.se.ba.danilin.paul.histogram_model.histogram.{ElementsUniverse, Histogram, HistogramImpl}
 
+import scala.collection.mutable
+
 /**
   * The interface of the operations over histograms
   */
-sealed trait Operation {
+sealed trait Operation extends Serializable {
   /**
     * The narity of the operation
     * @return
@@ -81,7 +83,7 @@ abstract class HistogramBinaryMergeOperation extends HistogramBinaryOperation {
       mergeRes = merge(leftCount, rightCount) if mergeRes != 0
     } yield element -> mergeRes
 
-    HistogramImpl(histPairs.toMap)(new SetUniverse(allElements))
+    HistogramImpl(mutable.Map(histPairs.toMap.toSeq: _*))(new SetUniverse(allElements))
   }
 
   /**

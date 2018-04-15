@@ -4,7 +4,7 @@ package ru.hse.se.ba.danilin.paul.histogram_model.queries
   * Parser of a string to inputs
   * @tparam E The elements of a histogram
   */
-class Parser[E] {
+class Parser[E] extends Serializable {
 
   import ru.hse.se.ba.danilin.paul.histogram_model.queries.Query.Stack
 
@@ -14,7 +14,7 @@ class Parser[E] {
     * @param aliasToInput The lexems to inputs for parsing
     * @return A stack of inputs in polish notation:
     */
-  def parse(query: String)(implicit aliasToInput: Map[String, Input[E]]): Option[Stack[Input[E]]] = {
+  def parse(query: String)(implicit aliasToInput: scala.collection.Map[String, Input[E]]): Option[Stack[Input[E]]] = {
     getLexems(query.replace(" ", ""), List.empty)(aliasToInput)
       .map(toPolishNotation(_))
   }
@@ -27,7 +27,7 @@ class Parser[E] {
     * @return The sequence of inputs of the query (the first - on top)
     */
   def getLexems(query: String, acc: Stack[Input[E]])
-               (implicit aliasToInput: Map[String, Input[E]]): Option[Stack[Input[E]]] = {
+               (implicit aliasToInput: scala.collection.Map[String, Input[E]]): Option[Stack[Input[E]]] = {
     if (query.isEmpty)
       Some(acc)
     else {

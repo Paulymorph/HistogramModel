@@ -4,7 +4,7 @@ package ru.hse.se.ba.danilin.paul.histogram_model.histogram
   * Universe of elements
   * @tparam E The element type
   */
-trait ElementsUniverse[E] {
+trait ElementsUniverse[E] extends Serializable {
   /**
     * Whether the element is in universe
     * @param element The element to check

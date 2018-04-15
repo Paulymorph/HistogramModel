@@ -6,7 +6,7 @@ import ru.hse.se.ba.danilin.paul.histogram_model.operations._
   * Basic trait for histogram and its operations
   * @tparam E The element of the histogram
   */
-trait Histogram[E] {
+trait Histogram[E] extends Serializable {
   /**
     * The presence of the element
     * @param element The element of a histogram

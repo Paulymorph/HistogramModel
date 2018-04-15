@@ -3,6 +3,8 @@ package ru.hse.se.ba.danilin.paul.histogram_model.histogram
 import org.json4s.{CustomSerializer, Formats, JDouble, JField, JObject}
 import ru.hse.se.ba.danilin.paul.histogram_model.atomizers._
 
+import scala.collection.mutable
+
 /**
   * The object with implicits for the project
   */
@@ -61,7 +63,7 @@ object Implicits {
         val hist = s.map { case (word, JDouble(count)) =>
           word -> count
         }.toMap
-        HistogramImpl(hist)
+        HistogramImpl(mutable.Map(hist.toSeq: _*))
     },
     {
       case HistogramImpl(hist) if hist.keys.headOption.exists(_.isInstanceOf[String]) =>
@@ -81,7 +83,7 @@ object Implicits {
           val color = Color.allColors.find(_.toString == colorString).getOrElse(Red)
           color -> count
         }.toMap
-        HistogramImpl(hist)
+        HistogramImpl(mutable.Map(hist.toSeq: _*))
     },
     {
       case HistogramImpl(hist) if hist.keys.headOption.exists(_.isInstanceOf[Color]) =>

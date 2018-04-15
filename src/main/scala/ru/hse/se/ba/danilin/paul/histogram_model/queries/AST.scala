@@ -7,7 +7,7 @@ import ru.hse.se.ba.danilin.paul.histogram_model.operations.{AggregateOperation,
   * The base interface for a node of an AST (Abstract syntax tree) for histograms
   * @tparam E The type of the elements of the histogram
   */
-sealed trait Node[E] {
+sealed trait Node[E] extends Serializable {
   /**
     * Maps the tree to a new one node by node
     * @param f The mapper function

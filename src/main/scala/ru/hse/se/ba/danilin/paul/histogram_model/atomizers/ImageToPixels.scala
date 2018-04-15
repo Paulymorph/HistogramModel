@@ -21,7 +21,7 @@ class ImageToPixels extends ImageAtomizer[Color] {
         rawPixel = source.getRGB(x, y)
         pixel = new JColor(rawPixel)
       } yield pixel
-    }, Some("for"))
+    })
 
     TimeUtils.time({
       val rawParallel = rawPixels.par
@@ -29,7 +29,7 @@ class ImageToPixels extends ImageAtomizer[Color] {
 
       colorsMapped
         .toList
-    }, Some("map"))
+    })
   }
 
   /**
@@ -44,7 +44,7 @@ class ImageToPixels extends ImageAtomizer[Color] {
 /**
   * The color of pixel
   */
-sealed trait Color {
+sealed trait Color extends Serializable {
   protected def max(r: Int, g: Int, b: Int) = {
     if (r > g) {
       if (r > b)
@@ -71,7 +71,7 @@ object Color {
   /**
     * All colors possible
     */
-  val allColors = List(Red, Green, Blue, Yellow, GreenYellow, LightBlue)
+  val allColors = List(Red, LightBlue, Blue, Yellow, GreenYellow, Green)
 
   /**
     * Finds out the colors of the pixel

@@ -2,13 +2,15 @@ package ru.hse.se.ba.danilin.paul.histogram_model.histogram
 
 import ru.hse.se.ba.danilin.paul.histogram_model.atomizers.Atomizer
 
+import scala.collection.mutable
+
 /**
   * An implementation of the histogram
   * @param histogram The histogram contents
   * @param universe The universe of the histogram
   * @tparam O The elements type of the histogram
   */
-case class HistogramImpl[O](histogram: Map[O, Double])(implicit universe: ElementsUniverse[O])
+case class HistogramImpl[O](histogram: mutable.Map[O, Double])(implicit universe: ElementsUniverse[O])
   extends Histogram[O] {
 
   /**
@@ -28,7 +30,7 @@ case class HistogramImpl[O](histogram: Map[O, Double])(implicit universe: Elemen
     * The set of elements present in the histogram
     * @return The set of elements present in the histogram
     */
-  override def elementsPresent: Set[O] = histogram.keySet
+  override def elementsPresent: Set[O] = histogram.keySet.toSet
 
   /**
     * A subhistogram of the histogram
@@ -36,7 +38,7 @@ case class HistogramImpl[O](histogram: Map[O, Double])(implicit universe: Elemen
     * @return A subhistogram of the histogram
     */
   override def subHistogram(newElementsUniverse: ElementsUniverse[O]): Histogram[O] = {
-    val filteredHistogram = histogram.filterKeys(element => newElementsUniverse.isElementInUniverse(element))
+    val filteredHistogram = mutable.Map(histogram.filterKeys(element => newElementsUniverse.isElementInUniverse(element)).toSeq: _*)
     HistogramImpl(filteredHistogram)(newElementsUniverse)
   }
 
@@ -46,7 +48,7 @@ case class HistogramImpl[O](histogram: Map[O, Double])(implicit universe: Elemen
     */
   override def normalize(): Histogram[O] = {
     val n = histogram.values.sum
-    HistogramImpl(histogram.mapValues(_ / n))
+    HistogramImpl(mutable.Map(histogram.mapValues(_ / n).toSeq: _*))
   }
 }
 
@@ -66,7 +68,7 @@ object HistogramImpl {
         val newCount = elementsMap.get(i).fold(1.0)(_ + 1)
         elementsMap + (i -> newCount)
     })
-    HistogramImpl(histMap)
+    HistogramImpl(mutable.Map(histMap.toSeq: _*))
   }
 }
 

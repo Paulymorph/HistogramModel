@@ -7,7 +7,7 @@ import ru.hse.se.ba.danilin.paul.histogram_model.operations.Operation
   * Interface for inputs of a query
   * @tparam E The type of the elements of a histogram
   */
-sealed trait Input[E]
+sealed trait Input[E] extends Serializable
 
 /**
   * A base for common lexems

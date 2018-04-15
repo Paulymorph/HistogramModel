@@ -13,7 +13,7 @@ object TimeUtils {
       case Some(name) => s"$name evaluated $duration"
     }
 
-    println(message)
+//    println(message)
     res
   }
 }

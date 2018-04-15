@@ -6,7 +6,7 @@ import ru.hse.se.ba.danilin.paul.histogram_model.operations._
 /**
   * AST executor
   */
-object TreeExecutor {
+object TreeExecutor extends Serializable {
   /**
     * Executes an AST
     * @param tree The root node of the AST
@@ -43,7 +43,7 @@ object TreeExecutor {
   * @param root The root of the AST
   * @tparam E The elements of the histogram
   */
-class Query[E](root: Node[E]) {
+class Query[E](root: Node[E]) extends Serializable {
   /**
     * Executes the query
     * @param histogram The histogram to execute the query on
@@ -152,7 +152,7 @@ object Query {
     * @tparam E Type of the histogram elements
     * @return A query parsed from the string
     */
-  def fromString[E](query: String)(implicit aliasToInput: Map[String, Input[E]]): Query[E] =
+  def fromString[E](query: String)(implicit aliasToInput: scala.collection.Map[String, Input[E]]): Query[E] =
     Query(new Parser[E].parse(query)(aliasToInput).get)
 }
 
