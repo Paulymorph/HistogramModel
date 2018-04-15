@@ -39,6 +39,8 @@ class ImageToPixels extends ImageAtomizer[Color] {
     * @return True for any color
     */
   override def isElementInUniverse(element: Color): Boolean = true
+
+  override def allElements: Seq[Color] = Color.allColors
 }
 
 /**

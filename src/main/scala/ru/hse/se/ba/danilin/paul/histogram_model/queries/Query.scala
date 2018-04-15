@@ -126,6 +126,7 @@ object Query {
     "(" -> new OpenBracketInput[E],
     ")" -> new ClosingBracketInput[E],
     "+" -> OperationInput(Unite),
+    "unite" -> OperationInput(Unite),
     "intersect" -> OperationInput(Intersect),
     "-" -> OperationInput(Subtract),
     "&" -> OperationInput(And),
@@ -152,8 +153,13 @@ object Query {
     * @tparam E Type of the histogram elements
     * @return A query parsed from the string
     */
-  def fromString[E](query: String)(implicit aliasToInput: scala.collection.Map[String, Input[E]]): Query[E] =
-    Query(new Parser[E].parse(query)(aliasToInput).get)
+  def fromString[E](query: String)(implicit aliasToInput: scala.collection.Map[String, Input[E]]): Query[E] = {
+    val polishNotationStackOpt = new Parser[E].parse(query)(aliasToInput)
+    polishNotationStackOpt match {
+      case None => throw new IllegalArgumentException(s"The query $query was incorrect")
+      case Some(stack) => Query(stack)
+    }
+  }
 }
 
 

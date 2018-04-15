@@ -11,7 +11,7 @@ class OneHistogram[E](implicit universe: ElementsUniverse[E]) extends Histogram[
     * @param element The element of a histogram
     * @return The presence of the element
     */
-  override def apply(element: E): Double = Double.MaxValue
+  override def apply(element: E): Double = 1
 
   /**
     * The elements universe of the histogram
@@ -22,7 +22,7 @@ class OneHistogram[E](implicit universe: ElementsUniverse[E]) extends Histogram[
   /**
     * The elements present in the histogram
     */
-  override val elementsPresent: Set[E] = Set.empty[E]
+  override val elementsPresent: Set[E] = universe.allElements.toSet
 
   /**
     * Subhistogram

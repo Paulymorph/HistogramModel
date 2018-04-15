@@ -17,4 +17,6 @@ class StringToWords extends StringAtomizer[String] {
     * @return Accept all words
     */
   override def isElementInUniverse(element: String): Boolean = true
+
+  override def allElements: Seq[String] = ???
 }

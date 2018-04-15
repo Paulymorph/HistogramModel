@@ -11,4 +11,6 @@ trait ElementsUniverse[E] extends Serializable {
     * @return True if the element is in universe, false otherwise
     */
   def isElementInUniverse(element: E): Boolean
+
+  def allElements: Seq[E]
 }

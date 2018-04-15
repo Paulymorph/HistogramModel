@@ -27,16 +27,18 @@ object Implicits {
 
   /**
     * An implicit class for construction universe from a set of elements
-    * @param unverseSet The set of elements for the universe
+    * @param universeSet The set of elements for the universe
     * @tparam E The element type
     */
-  implicit class SetUniverse[E](unverseSet: Set[E]) extends ElementsUniverse[E] {
+  implicit class SetUniverse[E](universeSet: Set[E]) extends ElementsUniverse[E] {
     /**
       * If the element in the set universe
       * @param element The element to check
       * @return True if the element is in universe, false otherwise
       */
-    override def isElementInUniverse(element: E): Boolean = unverseSet.contains(element)
+    override def isElementInUniverse(element: E): Boolean = universeSet.contains(element)
+
+    override def allElements: Seq[E] = universeSet.toSeq
   }
 
   /**

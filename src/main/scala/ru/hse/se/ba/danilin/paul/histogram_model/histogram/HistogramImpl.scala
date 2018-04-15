@@ -39,7 +39,7 @@ case class HistogramImpl[O](histogram: mutable.Map[O, Double])(implicit universe
     */
   override def subHistogram(newElementsUniverse: ElementsUniverse[O]): Histogram[O] = {
     val filteredHistogram = mutable.Map(histogram.filterKeys(element => newElementsUniverse.isElementInUniverse(element)).toSeq: _*)
-    HistogramImpl(filteredHistogram)(newElementsUniverse)
+    HistogramImpl(filteredHistogram)(universe)
   }
 
   /**

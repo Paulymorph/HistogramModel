@@ -52,9 +52,11 @@ object Main {
   }
 
   def main(args: Array[String]): Unit = {
+
+
     val histsList = readImages(new File("/Users/pauldanilin/Documents/HSE/CourseWorks/HistogramModel/Demonstration/images"))
     val hists = histsList.map(_.name).zip(histsList).toMap
-
+//
     val imagesAliases = hists.mapValues(_.input)
 
     val pixelsAliases = Map(
@@ -70,11 +72,18 @@ object Main {
 
     implicit val aliases = mutable.Map((Query.standardAliases[Color] ++ imagesAliases ++ pixelsAliases).asInstanceOf[Map[String, Input[Color]]].toSeq: _*)
 
+//    val one = new OneHistogram[Color]
+//
+//    one besides hists("coli").histogram.subHistogram(Set[Color](Blue))
 
-    val q = Query.fromString("green-greenyellow")
-    val sea = hists("sea").histogram
-    q.execute(sea)
 
+//    val q = Query.fromString("not blue")
+//    val sea = hists("sea").histogram
+//    q.execute(sea)
+
+    val h = hists("coli").histogram
+    val q = Query.fromString("not blue")
+    q.execute(h)
 
 
 //    val h = HistogramImpl.extract("d f")
